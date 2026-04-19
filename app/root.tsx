@@ -11,6 +11,12 @@ import type { Route } from "./+types/root";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
+  { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+  // Swap the line above for one of these when you have a better format:
+  // { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+  // { rel: "icon", href: "/favicon.png", type: "image/png", sizes: "32x32" },
+  // Apple touch icon (home screen shortcut on iOS):
+  // { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
