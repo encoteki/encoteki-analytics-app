@@ -7,6 +7,22 @@
 export type ChainKey = "base" | "arbitrum" | "lisk" | "manta"
 export type TokenSymbol = "ETH" | "USDC" | "USDT" | "IDRX" | "ARB" | "LSK" | "MANTA"
 
+export const TSB_CONTRACTS: Record<ChainKey, string> = {
+  base: import.meta.env.VITE_TSB_CONTRACT_BASE ?? "",
+  arbitrum: import.meta.env.VITE_TSB_CONTRACT_ARBITRUM ?? "",
+  lisk: import.meta.env.VITE_TSB_CONTRACT_LISK ?? "",
+  manta: import.meta.env.VITE_TSB_CONTRACT_MANTA ?? "",
+}
+
+export const EXPLORER_TOKEN_URLS: Record<ChainKey, string> = {
+  base: import.meta.env.VITE_BASE_TOKEN_URL ?? "https://basescan.io/token/",
+  arbitrum: import.meta.env.VITE_ARBITRUM_TOKEN_URL ?? "https://arbiscan.io/token/",
+  lisk: import.meta.env.VITE_LISK_TOKEN_URL ?? "https://blockscout.lisk.com/token/",
+  manta:
+    import.meta.env.VITE_MANTA_TOKEN_URL ??
+    "https://pacific-explorer.manta.network/token/",
+}
+
 export interface TokenConfig {
   symbol: TokenSymbol
   address: string
@@ -25,11 +41,13 @@ export interface ChainConfig {
 }
 
 // ── Environment ──────────────────────────────────────────────
-export const APP_ENV = (import.meta.env.VITE_APP_ENV ?? "testnet") as
-  | "testnet"
-  | "mainnet"
-export const IS_MAINNET = APP_ENV === "mainnet"
-export const GRAPHQL_URL = import.meta.env.VITE_GRAPHQL_URL as string
+export const APP_ENV = (import.meta.env.VITE_APP_ENV ?? "local") as "local" | "prod"
+export const IS_PROD = APP_ENV === "prod"
+export const GRAPHQL_URL = (
+  APP_ENV === "local"
+    ? import.meta.env.VITE_GRAPHQL_URL_LOCAL
+    : import.meta.env.VITE_GRAPHQL_URL_PROD
+) as string
 export const TOTAL_SUPPLY = Number(import.meta.env.VITE_TOTAL_SUPPLY ?? 4000)
 
 // ── Chain IDs ────────────────────────────────────────────────
@@ -47,7 +65,7 @@ const MAINNET_CHAIN_IDS: Record<ChainKey, number> = {
   manta: Number(import.meta.env.VITE_MAINNET_CHAIN_ID_MANTA ?? 169),
 }
 
-export const CHAIN_IDS: Record<ChainKey, number> = IS_MAINNET
+export const CHAIN_IDS: Record<ChainKey, number> = IS_PROD
   ? MAINNET_CHAIN_IDS
   : TESTNET_CHAIN_IDS
 
@@ -228,7 +246,7 @@ const MAINNET_TOKENS: Record<ChainKey, TokenConfig[]> = {
   ],
 }
 
-export const CHAIN_TOKENS: Record<ChainKey, TokenConfig[]> = IS_MAINNET
+export const CHAIN_TOKENS: Record<ChainKey, TokenConfig[]> = IS_PROD
   ? MAINNET_TOKENS
   : TESTNET_TOKENS
 
@@ -295,9 +313,9 @@ export const CHAIN_META: Record<
   },
   manta: {
     name: "MANTA",
-    bg: "bg-[#0A0A0A]",
-    text: "text-white",
-    badge: "bg-white text-[#0A0A0A]",
+    bg: "bg-[#E0B8FF]",
+    text: "text-black",
+    badge: "bg-[#6B21A8] text-white",
     icon: mantaIcon,
   },
 }

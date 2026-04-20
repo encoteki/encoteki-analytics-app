@@ -13,7 +13,7 @@ export interface MintItem {
   chainId: string
   status: string
   statusDesc: string
-  blockTimestamp?: string
+  mintDate?: string
 }
 
 interface GraphQLResponse<T> {
@@ -62,7 +62,7 @@ const QUERY_ALL = /* graphql */ `
         chainId
         status
         statusDesc
-        blockTimestamp
+        mintDate
       }
     }
   }
@@ -89,7 +89,7 @@ const QUERY_BY_CHAIN = /* graphql */ `
         chainId
         status
         statusDesc
-        blockTimestamp
+        mintDate
       }
     }
   }
@@ -118,7 +118,7 @@ const QUERY_BY_CHAIN_AND_TOKEN = /* graphql */ `
         chainId
         status
         statusDesc
-        blockTimestamp
+        mintDate
       }
     }
   }
