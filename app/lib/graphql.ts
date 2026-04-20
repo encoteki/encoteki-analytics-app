@@ -13,6 +13,7 @@ export interface MintItem {
   chainId: string;
   status: string;
   statusDesc: string;
+  blockTimestamp?: string;
 }
 
 interface GraphQLResponse<T> {
@@ -39,7 +40,7 @@ async function gqlFetch<T>(
   const json: GraphQLResponse<T> = await res.json();
 
   if (json.errors?.length) {
-    throw new Error(json.errors.map(e => e.message).join("; "));
+    throw new Error(json.errors.map((e) => e.message).join("; "));
   }
 
   if (!json.data) {
@@ -61,6 +62,7 @@ const QUERY_ALL = /* graphql */ `
         chainId
         status
         statusDesc
+        blockTimestamp
       }
     }
   }
@@ -87,6 +89,7 @@ const QUERY_BY_CHAIN = /* graphql */ `
         chainId
         status
         statusDesc
+        blockTimestamp
       }
     }
   }
@@ -97,7 +100,9 @@ interface MintsByChainData {
 }
 
 export async function fetchMintsByChain(chainId: number): Promise<MintItem[]> {
-  const data = await gqlFetch<MintsByChainData>(QUERY_BY_CHAIN, { chainId: chainId.toString() });
+  const data = await gqlFetch<MintsByChainData>(QUERY_BY_CHAIN, {
+    chainId: chainId.toString(),
+  });
   return data.mints.items;
 }
 
@@ -113,6 +118,7 @@ const QUERY_BY_CHAIN_AND_TOKEN = /* graphql */ `
         chainId
         status
         statusDesc
+        blockTimestamp
       }
     }
   }
@@ -126,10 +132,13 @@ export async function fetchMintsByChainAndToken(
   chainId: number,
   paymentToken: string,
 ): Promise<MintItem[]> {
-  const data = await gqlFetch<MintsByChainAndTokenData>(QUERY_BY_CHAIN_AND_TOKEN, {
-    chainId: chainId.toString(),
-    paymentToken,
-  });
+  const data = await gqlFetch<MintsByChainAndTokenData>(
+    QUERY_BY_CHAIN_AND_TOKEN,
+    {
+      chainId: chainId.toString(),
+      paymentToken,
+    },
+  );
   return data.mints.items;
 }
 
