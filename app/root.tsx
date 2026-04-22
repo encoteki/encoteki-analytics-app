@@ -36,7 +36,9 @@ const connectSrc = ["'self'", GRAPHQL_ORIGIN, RPC_ORIGIN].filter(Boolean).join("
 const CSP = [
   "default-src 'self'",
   `connect-src ${connectSrc}`,
-  "script-src 'self'",
+  // React Router SSR injects inline scripts (context, manifest, stream chunks) —
+  // 'unsafe-inline' is required; nonces aren't an option without RR nonce support.
+  `script-src 'self' 'unsafe-inline'${import.meta.env.DEV ? " 'unsafe-eval'" : ""}`,
   // Tailwind v4 injects <style> tags at runtime — unsafe-inline required
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
