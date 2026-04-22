@@ -31,8 +31,7 @@ async function ethCall(
 
   const json: RpcResponse = await res.json()
   if (json.error) throw new Error(`RPC error ${json.error.code}: ${json.error.message}`)
-  if (!json.result || json.result === "0x")
-    throw new Error("RPC returned empty result")
+  if (!json.result || json.result === "0x") throw new Error("RPC returned empty result")
 
   return json.result
 }
@@ -50,5 +49,8 @@ export async function fetchMaxSupply(
   signal?: AbortSignal
 ): Promise<number> {
   const hex = await ethCall(rpcUrl, contractAddress, MAX_SUPPLY_SELECTOR, signal)
+  if (!/^0x[0-9a-fA-F]+$/.test(hex)) {
+    throw new Error(`RPC returned unexpected result format: ${hex.slice(0, 20)}`)
+  }
   return Number(BigInt(hex))
 }

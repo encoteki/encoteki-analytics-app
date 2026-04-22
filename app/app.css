@@ -7,18 +7,22 @@
 
   /* ── Brand tokens ─────────────────────────────────────────── */
   --color-ink: #0f0f0f;
+  /* Warm dark gray — ≥4.5:1 contrast on all paper variants */
+  --color-ink-muted: oklch(0.42 0.01 85);
   --color-paper: #f4f1ea;
   --color-paper-mid: #efece6;
   --color-paper-dark: #dcd8cf;
+  /* Semantic status tokens — tinted toward the brand's warm hue */
+  --color-warning: oklch(0.85 0.14 85);
+  --color-danger: oklch(0.42 0.16 25);
+  --color-success: oklch(0.42 0.1 145);
 }
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
-
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+  background-color: var(--color-paper-mid);
+  color: var(--color-ink);
+  color-scheme: light;
 }
 
 /* ── Reduced motion: disable all transitions & animations ─── */

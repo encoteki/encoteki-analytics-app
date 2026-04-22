@@ -64,13 +64,16 @@ function HeatmapCell({ count, dateKey, isFuture, isToday, cellBg }: HeatmapCellP
         ref={cellRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setShowTooltip(false)}
+        onFocus={handleMouseEnter}
+        onBlur={() => setShowTooltip(false)}
+        tabIndex={isFuture ? -1 : 0}
         style={{
           aspectRatio: "1",
           backgroundColor: cellBg,
           outline: isToday ? "2px solid #0F0F0F" : "none",
           outlineOffset: "1px",
         }}
-        className="w-full cursor-default hover:brightness-90 transition-[filter]"
+        className="w-full cursor-default hover:brightness-90 focus-visible:brightness-75 transition-[filter]"
         aria-label={
           isFuture ? undefined : `${dateLabel}: ${count} mint${count !== 1 ? "s" : ""}`
         }
@@ -382,8 +385,8 @@ function MintHeatmap({ dailyCounts, loading }: HeatmapProps) {
           <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight leading-none">
             DAILY ACTIVITY
           </h2>
-          <p className="text-xs font-bold opacity-50 mt-3 uppercase tracking-widest">
-            Confirmed mints per day — last 12 months — all chains combined
+          <p className="text-xs font-bold text-ink-muted mt-3 tracking-wide">
+            Confirmed mints per day · last 12 months · all chains combined
           </p>
         </div>
 
@@ -398,12 +401,12 @@ function MintHeatmap({ dailyCounts, loading }: HeatmapProps) {
               </span>
             </div>
             <div className="p-4 md:p-6 bg-paper-mid flex flex-col justify-between min-h-20">
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-50">
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-ink-muted">
                 STREAK
               </span>
               <span className="text-3xl md:text-4xl font-black tracking-tighter leading-none mt-2">
                 {streak}
-                <span className="text-xs font-bold uppercase tracking-widest opacity-50 ml-1">
+                <span className="text-xs font-bold uppercase tracking-widest text-ink-muted ml-1">
                   DAY{streak !== 1 ? "S" : ""}
                 </span>
               </span>
@@ -415,15 +418,15 @@ function MintHeatmap({ dailyCounts, loading }: HeatmapProps) {
       {/* ── Graph area ─────────────────────────────────────────── */}
       <div className="bg-paper border-b-4 border-ink">
         {loading ? (
-          <div className="h-36 flex items-center justify-center font-black uppercase tracking-widest text-sm opacity-25 motion-safe:animate-pulse">
+          <div className="h-36 flex items-center justify-center font-black uppercase tracking-widest text-sm text-ink-muted motion-safe:animate-pulse">
             BUILDING HEATMAP…
           </div>
         ) : !hasData ? (
           <div className="h-36 flex flex-col items-center justify-center gap-3">
-            <span className="font-black uppercase tracking-widest text-sm opacity-30">
+            <span className="font-black uppercase tracking-widest text-sm text-ink-muted">
               NO TIMESTAMP DATA YET
             </span>
-            <span className="font-bold text-[11px] uppercase tracking-widest opacity-25 text-center px-6">
+            <span className="font-bold text-[11px] text-ink-muted text-center px-6">
               Ensure <code className="font-mono">mintDate</code> is stored in the
               indexer schema — mints will appear here after re-indexing
             </span>
@@ -447,7 +450,7 @@ function MintHeatmap({ dailyCounts, loading }: HeatmapProps) {
                   return (
                     <div
                       key={w}
-                      className="text-[9px] font-black uppercase tracking-wider text-ink/40 overflow-visible whitespace-nowrap"
+                      className="text-[9px] font-black uppercase tracking-wider text-ink-muted overflow-visible whitespace-nowrap"
                     >
                       {ml ? ml.label : ""}
                     </div>
@@ -467,7 +470,7 @@ function MintHeatmap({ dailyCounts, loading }: HeatmapProps) {
                   }}
                 >
                   {/* Day label — only Mon, Wed, Fri */}
-                  <div className="text-[9px] font-black uppercase tracking-wider text-ink/35 flex items-center justify-end pr-1 shrink-0">
+                  <div className="text-[9px] font-black uppercase tracking-wider text-ink-muted flex items-center justify-end pr-1 shrink-0">
                     {dayOfWeek === 1
                       ? "MON"
                       : dayOfWeek === 3
@@ -508,7 +511,7 @@ function MintHeatmap({ dailyCounts, loading }: HeatmapProps) {
                   style={{ gridColumn: "2 / -1" }}
                 >
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[9px] font-black uppercase tracking-wider text-ink/35 mr-0.5">
+                    <span className="text-[9px] font-black uppercase tracking-wider text-ink-muted mr-0.5">
                       LESS
                     </span>
                     {GREEN_SCALE.map((bg) => (
@@ -522,13 +525,13 @@ function MintHeatmap({ dailyCounts, loading }: HeatmapProps) {
                         aria-hidden="true"
                       />
                     ))}
-                    <span className="text-[9px] font-black uppercase tracking-wider text-ink/35 ml-0.5">
+                    <span className="text-[9px] font-black uppercase tracking-wider text-ink-muted ml-0.5">
                       MORE
                     </span>
                   </div>
                   {peakKey && (
                     <div className="hidden sm:flex items-center gap-2">
-                      <span className="text-[9px] font-black uppercase tracking-[0.18em] text-ink/35">
+                      <span className="text-[9px] font-black uppercase tracking-[0.18em] text-ink-muted">
                         PEAK
                       </span>
                       <span className="text-[11px] font-black uppercase tracking-wider text-ink">
@@ -547,7 +550,7 @@ function MintHeatmap({ dailyCounts, loading }: HeatmapProps) {
       {hasData && !loading && (
         <div className="grid grid-cols-2 divide-x-4 divide-ink bg-white">
           <div className="px-4 sm:px-6 py-5 md:px-8 md:py-6">
-            <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40 mb-1">
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-ink-muted mb-1">
               ACTIVE DAYS
             </p>
             <p className="text-2xl md:text-3xl font-black tracking-tighter leading-none">
@@ -555,17 +558,17 @@ function MintHeatmap({ dailyCounts, loading }: HeatmapProps) {
             </p>
           </div>
           <div className="px-4 sm:px-6 py-5 md:px-8 md:py-6">
-            <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40 mb-1">
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-ink-muted mb-1">
               PEAK DAY
             </p>
             <p className="text-2xl md:text-3xl font-black tracking-tighter leading-none">
               {peakCount.toLocaleString()}
-              <span className="text-xs font-bold uppercase tracking-widest opacity-40 ml-1.5">
+              <span className="text-xs font-bold uppercase tracking-widest text-ink-muted ml-1.5">
                 MINTS
               </span>
             </p>
             {peakKey && (
-              <p className="text-[9px] font-bold uppercase tracking-widest opacity-40 mt-0.5">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-ink-muted mt-0.5">
                 {formatDayLabel(peakKey)}
               </p>
             )}
@@ -577,6 +580,7 @@ function MintHeatmap({ dailyCounts, loading }: HeatmapProps) {
 }
 export default function AnalyticsDashboard() {
   const [maxSupply, setMaxSupply] = useState<number | null>(null)
+  const [maxSupplyError, setMaxSupplyError] = useState(false)
   const [totalMinted, setTotalMinted] = useState<number | null>(null)
   const [chainStats, setChainStats] = useState<Record<ChainKey, ChainStats>>({
     base: { mintCount: 0, revenue: [] },
@@ -600,8 +604,8 @@ export default function AnalyticsDashboard() {
     const controller = new AbortController()
     fetchMaxSupply(TSB_CONTRACTS.base, BASE_RPC_URL, controller.signal)
       .then(setMaxSupply)
-      .catch(() => {
-        // Silently fall back to TOTAL_SUPPLY from env
+      .catch((err) => {
+        if ((err as Error)?.name !== "AbortError") setMaxSupplyError(true)
       })
     return () => controller.abort()
   }, [])
@@ -656,7 +660,8 @@ export default function AnalyticsDashboard() {
       setDailyCounts(deriveDailyMintCounts(allMints))
     } catch (err) {
       if ((err as Error)?.name === "AbortError") return // cancelled; not an error
-      setError(err instanceof Error ? err.message : "Failed to load data")
+      if (import.meta.env.DEV) console.error("[loadData]", err)
+      setError("Failed to load mint data. Please try again.")
     } finally {
       if (!controller.signal.aborted) {
         setGlobalLoading(false)
@@ -681,9 +686,10 @@ export default function AnalyticsDashboard() {
   return (
     <div className="min-h-screen bg-paper-mid text-ink font-sans antialiased selection:bg-ink selection:text-paper-mid">
       <main className="mx-auto max-w-450 border-x-0 xl:border-x-4 border-ink min-h-screen bg-paper flex flex-col">
+        <h1 className="sr-only">Encoteki Cross-Chain Minting Analytics</h1>
         {/* ── ENV Badge ───────────────────────────────────────── */}
         <div
-          className={`flex justify-end px-4 py-2 border-b-2 border-ink ${APP_ENV === "prod" ? "bg-ink text-paper-mid" : "bg-yellow-400 text-ink"}`}
+          className={`flex justify-end px-4 py-2 border-b-2 border-ink ${APP_ENV === "prod" ? "bg-ink text-paper-mid" : "bg-warning text-ink"}`}
         >
           <span className="text-xs font-black uppercase tracking-widest">
             {APP_ENV === "prod" ? "PRODUCTION" : "LOCAL"} ENVIRONMENT
@@ -700,22 +706,26 @@ export default function AnalyticsDashboard() {
                   TOTAL SUPPLY MINTED
                 </h2>
               </div>
-              <div className="bg-ink text-paper-mid px-4 py-2 text-sm md:text-base font-bold uppercase tracking-widest self-start shrink-0">
-                {globalLoading || maxSupply === null
-                  ? "LOADING…"
-                  : `${(maxSupply - totalConfirmed).toLocaleString()} REMAINING`}
+              <div
+                className={`px-4 py-2 text-sm md:text-base font-bold uppercase tracking-widest self-start shrink-0 ${maxSupplyError ? "bg-warning text-ink" : "bg-ink text-paper-mid"}`}
+              >
+                {maxSupplyError
+                  ? "SUPPLY UNAVAILABLE"
+                  : globalLoading || maxSupply === null
+                    ? "LOADING…"
+                    : `${(maxSupply - totalConfirmed).toLocaleString()} REMAINING`}
               </div>
             </div>
 
             <div className="relative z-10 mt-auto">
               {error ? (
-                <div className="mb-6 flex flex-col gap-4">
-                  <div className="text-red-600 font-bold text-lg uppercase tracking-widest">
+                <div role="alert" className="mb-6 flex flex-col gap-4">
+                  <div className="text-danger font-bold text-lg uppercase tracking-widest">
                     {error}
                   </div>
                   <button
                     onClick={loadData}
-                    className="self-start flex items-center gap-2 px-4 py-2 border-4 border-ink bg-white font-black uppercase tracking-widest text-sm hover:bg-ink hover:text-paper-mid transition-colors"
+                    className="self-start min-h-11 flex items-center gap-2 px-4 py-2 border-4 border-ink bg-white font-black uppercase tracking-widest text-sm hover:bg-ink hover:text-paper-mid transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                     aria-label="Retry loading data"
                   >
                     <RefreshCw className="w-4 h-4" strokeWidth={3} />
@@ -784,7 +794,7 @@ export default function AnalyticsDashboard() {
                         href={`${EXPLORER_TOKEN_URLS[key]}${TSB_CONTRACTS[key]}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current hover:scale-115 transition-all duration-150 ease-out"
+                        className="flex items-center justify-center min-w-11 min-h-11 rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current hover:scale-115 transition-all duration-150 ease-out"
                         aria-label={`View ${meta.name} TSB contract on explorer`}
                       >
                         <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.5]" />
@@ -834,11 +844,11 @@ export default function AnalyticsDashboard() {
 
                   <div className="space-y-6">
                     {globalLoading && stats.revenue.length === 0 ? (
-                      <div className="text-lg font-bold opacity-30 uppercase tracking-widest motion-safe:animate-pulse">
+                      <div className="text-lg font-bold text-ink-muted uppercase tracking-widest motion-safe:animate-pulse">
                         LOADING…
                       </div>
                     ) : stats.revenue.length === 0 ? (
-                      <div className="text-sm font-bold opacity-30 uppercase tracking-widest">
+                      <div className="text-sm font-bold text-ink-muted uppercase tracking-widest">
                         NO ACTIVITY
                       </div>
                     ) : (
@@ -855,16 +865,16 @@ export default function AnalyticsDashboard() {
                                 alt=""
                                 width={20}
                                 height={20}
-                                className="w-4 h-4 sm:w-6 sm:h-6 rounded-full object-cover "
+                                className="w-4 h-4 sm:w-6 sm:h-6 rounded-full object-cover"
                               />
-                              <span className="text-xs font-bold opacity-50 uppercase tracking-widest">
+                              <span className="text-xs font-bold text-ink-muted uppercase tracking-widest">
                                 {symbol}
                               </span>
                             </div>
                             <span className="text-3xl md:text-4xl font-black">
                               {formatAmount(amount, symbol)}
                             </span>
-                            <span className="text-xs font-bold opacity-40 uppercase tracking-widest mt-1">
+                            <span className="text-xs font-bold text-ink-muted uppercase tracking-widest mt-1">
                               {count.toLocaleString()} MINTS
                             </span>
                           </div>
@@ -916,12 +926,12 @@ export default function AnalyticsDashboard() {
                 placeholder="Filter by minter address…"
                 spellCheck={false}
                 autoComplete="off"
-                className="w-full bg-white/8 text-paper-mid font-mono text-sm placeholder:text-paper-mid/30 placeholder:font-sans placeholder:text-sm pl-8 pr-8 py-2.5 border border-white/15 focus:border-white/35 outline-none transition-colors rounded-none"
+                className="w-full bg-white/8 text-paper-mid font-mono text-sm placeholder:text-paper-mid/30 placeholder:font-sans placeholder:text-sm pl-8 pr-11 py-2.5 border border-white/15 focus:border-white/50 outline-none focus-visible:ring-1 focus-visible:ring-white/50 focus-visible:ring-inset transition-colors rounded-none"
               />
               {minterSearch && (
                 <button
                   onClick={() => setMinterSearch("")}
-                  className="absolute right-2.5 opacity-35 hover:opacity-70 transition-opacity"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center opacity-40 hover:opacity-80 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-white/60"
                   aria-label="Clear search"
                 >
                   <X className="w-3.5 h-3.5" strokeWidth={2.5} />
@@ -968,7 +978,7 @@ export default function AnalyticsDashboard() {
                   <tr>
                     <td
                       colSpan={7}
-                      className="px-6 py-12 text-center font-black uppercase tracking-widest opacity-40 motion-safe:animate-pulse"
+                      className="px-6 py-12 text-center font-black uppercase tracking-widest text-ink-muted motion-safe:animate-pulse"
                     >
                       FETCHING EVENTS…
                     </td>
@@ -977,7 +987,7 @@ export default function AnalyticsDashboard() {
                   <tr>
                     <td
                       colSpan={7}
-                      className="px-6 py-12 text-center font-black uppercase tracking-widest opacity-40"
+                      className="px-6 py-12 text-center font-black uppercase tracking-widest text-ink-muted"
                     >
                       {minterSearch
                         ? `NO RESULTS FOR "${minterSearch.toUpperCase()}"`
@@ -999,7 +1009,7 @@ export default function AnalyticsDashboard() {
                         key={mint.id}
                         className="border-b-2 border-ink hover:bg-paper-dark transition-colors group"
                       >
-                        <td className="px-4 py-4 md:px-6 border-r-4 border-ink text-black tabular-nums">
+                        <td className="px-4 py-4 md:px-6 border-r-4 border-ink text-ink tabular-nums">
                           #{mint.id}
                         </td>
                         <td className="px-4 py-4 md:px-6 border-r-4 border-ink opacity-60 tabular-nums">
@@ -1011,19 +1021,21 @@ export default function AnalyticsDashboard() {
                         <td className="px-4 py-4 md:px-6 border-r-4 border-ink">
                           {meta ? (
                             <span
-                              className={`inline-flex items-center gap-2 justify-center px-3 py-1 text-xs uppercase tracking-widest font-black ${meta.bg} ${meta.text} rounded-lg`}
+                              className={`inline-flex items-center gap-2 justify-center px-3 py-1 text-xs uppercase tracking-widest font-black ${meta.bg} ${meta.text}`}
                             >
                               <img
                                 src={meta.icon}
                                 alt=""
                                 width={16}
                                 height={16}
-                                className="w-6 h-6 rounded-full  bg-white"
+                                className="w-6 h-6 rounded-full bg-white"
                               />
                               {meta.name}
                             </span>
                           ) : (
-                            <span className="text-xs opacity-50">{mint.chainId}</span>
+                            <span className="text-xs text-ink-muted">
+                              {mint.chainId}
+                            </span>
                           )}
                         </td>
                         <td className="px-4 py-4 md:px-6 border-r-4 border-ink opacity-80 group-hover:opacity-100">
@@ -1035,7 +1047,7 @@ export default function AnalyticsDashboard() {
                                   alt=""
                                   width={16}
                                   height={16}
-                                  className="w-6 h-6 rounded-full "
+                                  className="w-6 h-6 rounded-full"
                                 />
                               )}
                             {tokenSymbol}
@@ -1048,19 +1060,19 @@ export default function AnalyticsDashboard() {
                           <div className="flex items-center gap-3">
                             {state === "CONFIRMED" && (
                               <span
-                                className="w-3 h-3 bg-green-600 shrink-0 rounded-full"
+                                className="w-3 h-3 bg-success shrink-0 rounded-full"
                                 aria-hidden="true"
                               />
                             )}
                             {state === "PENDING" && (
                               <span
-                                className="w-3 h-3 border-2 border-black border-r-transparent rounded-full motion-safe:animate-spin shrink-0"
+                                className="w-3 h-3 border-2 border-ink border-r-transparent rounded-full motion-safe:animate-spin shrink-0"
                                 aria-hidden="true"
                               />
                             )}
                             {state === "FAILED" && (
                               <span
-                                className="w-3 h-3 bg-red-600 shrink-0 rounded-full"
+                                className="w-3 h-3 bg-danger shrink-0 rounded-full"
                                 aria-hidden="true"
                               />
                             )}
@@ -1092,7 +1104,7 @@ export default function AnalyticsDashboard() {
               <button
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={safePage === 0}
-                className="flex-1 sm:flex-none min-h-12 px-6 font-black uppercase tracking-widest border-4 border-ink bg-white text-black hover:bg-ink hover:text-paper-mid transition-colors flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-black"
+                className="flex-1 sm:flex-none min-h-12 px-6 font-black uppercase tracking-widest border-4 border-ink bg-white text-black hover:bg-ink hover:text-paper-mid transition-colors flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-black focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-ink"
                 aria-label="Previous page"
               >
                 <ArrowLeft className="w-4 h-4" strokeWidth={3} aria-hidden="true" />
@@ -1101,7 +1113,7 @@ export default function AnalyticsDashboard() {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={safePage >= totalPages - 1}
-                className="flex-1 sm:flex-none min-h-12 px-6 font-black uppercase tracking-widest border-4 border-ink text-paper-mid bg-ink hover:bg-white hover:text-black transition-colors flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-ink disabled:hover:text-paper-mid"
+                className="flex-1 sm:flex-none min-h-12 px-6 font-black uppercase tracking-widest border-4 border-ink text-paper-mid bg-ink hover:bg-white hover:text-black transition-colors flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-ink disabled:hover:text-paper-mid focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-ink"
                 aria-label="Next page"
               >
                 NEXT
