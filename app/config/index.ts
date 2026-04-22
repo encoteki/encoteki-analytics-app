@@ -48,7 +48,12 @@ export const GRAPHQL_URL = (
     ? import.meta.env.VITE_GRAPHQL_URL_LOCAL
     : import.meta.env.VITE_GRAPHQL_URL_PROD
 ) as string
-export const TOTAL_SUPPLY = Number(import.meta.env.VITE_TOTAL_SUPPLY ?? 4000)
+// ── RPC URLs ─────────────────────────────────────────────────
+export const BASE_RPC_URL = (
+  APP_ENV === "local"
+    ? (import.meta.env.VITE_TESTNET_RPC_URL_BASE ?? "https://sepolia.base.org")
+    : (import.meta.env.VITE_MAINNET_RPC_URL_BASE ?? "https://mainnet.base.org")
+) as string
 
 // ── Chain IDs ────────────────────────────────────────────────
 const TESTNET_CHAIN_IDS: Record<ChainKey, number> = {

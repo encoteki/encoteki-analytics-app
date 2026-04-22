@@ -5,7 +5,7 @@ import { ArrowRight, ArrowLeft, Search, X, RefreshCw, ExternalLink } from "lucid
 
 import {
   APP_ENV,
-  TOTAL_SUPPLY,
+  BASE_RPC_URL,
   CHAIN_IDS,
   CHAIN_TOKENS,
   CHAIN_META,
@@ -19,6 +19,7 @@ import {
   type TokenSymbol,
 } from "~/config"
 import { fetchAllMints, STATUS_CONFIRMED, type MintItem } from "~/lib/graphql"
+import { fetchMaxSupply } from "~/lib/rpc"
 
 // ── HeatmapCell: custom cell with bold hover tooltip ──────────
 interface HeatmapCellProps {
@@ -575,6 +576,7 @@ function MintHeatmap({ dailyCounts, loading }: HeatmapProps) {
   )
 }
 export default function AnalyticsDashboard() {
+  const [maxSupply, setMaxSupply] = useState<number | null>(null)
   const [totalMinted, setTotalMinted] = useState<number | null>(null)
   const [chainStats, setChainStats] = useState<Record<ChainKey, ChainStats>>({
     base: { mintCount: 0, revenue: [] },
@@ -592,6 +594,17 @@ export default function AnalyticsDashboard() {
 
   // Track the current in-flight AbortController so we can cancel stale requests
   const abortRef = useRef<AbortController | null>(null)
+
+  // Fetch maxSupply once on mount — it's a contract constant, no need to poll
+  useEffect(() => {
+    const controller = new AbortController()
+    fetchMaxSupply(TSB_CONTRACTS.base, BASE_RPC_URL, controller.signal)
+      .then(setMaxSupply)
+      .catch(() => {
+        // Silently fall back to TOTAL_SUPPLY from env
+      })
+    return () => controller.abort()
+  }, [])
 
   // ── Derived: filtered over ALL data, then sliced for current page ──
   const filteredActivity = useMemo(() => {
@@ -662,8 +675,8 @@ export default function AnalyticsDashboard() {
   }, [loadData])
 
   const totalConfirmed = totalMinted ?? 0
-  // Guard against division-by-zero if TOTAL_SUPPLY is 0 or misconfigured
-  const percentMinted = TOTAL_SUPPLY > 0 ? (totalConfirmed / TOTAL_SUPPLY) * 100 : 0
+  const percentMinted =
+    maxSupply !== null && maxSupply > 0 ? (totalConfirmed / maxSupply) * 100 : 0
 
   return (
     <div className="min-h-screen bg-paper-mid text-ink font-sans antialiased selection:bg-ink selection:text-paper-mid">
@@ -688,9 +701,9 @@ export default function AnalyticsDashboard() {
                 </h2>
               </div>
               <div className="bg-ink text-paper-mid px-4 py-2 text-sm md:text-base font-bold uppercase tracking-widest self-start shrink-0">
-                {globalLoading
+                {globalLoading || maxSupply === null
                   ? "LOADING…"
-                  : `${(TOTAL_SUPPLY - totalConfirmed).toLocaleString()} REMAINING`}
+                  : `${(maxSupply - totalConfirmed).toLocaleString()} REMAINING`}
               </div>
             </div>
 
@@ -760,7 +773,7 @@ export default function AnalyticsDashboard() {
                         alt=""
                         width={32}
                         height={32}
-                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-current bg-white"
+                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover  bg-white"
                       />
                       <span className="text-lg sm:text-xl lg:text-3xl font-black uppercase tracking-tight leading-none">
                         {meta.name}
@@ -842,7 +855,7 @@ export default function AnalyticsDashboard() {
                                 alt=""
                                 width={20}
                                 height={20}
-                                className="w-4 h-4 sm:w-5 sm:h-5 rounded-full object-cover border border-ink bg-white"
+                                className="w-4 h-4 sm:w-6 sm:h-6 rounded-full object-cover "
                               />
                               <span className="text-xs font-bold opacity-50 uppercase tracking-widest">
                                 {symbol}
@@ -998,14 +1011,14 @@ export default function AnalyticsDashboard() {
                         <td className="px-4 py-4 md:px-6 border-r-4 border-ink">
                           {meta ? (
                             <span
-                              className={`inline-flex items-center gap-2 justify-center px-3 py-1 text-xs uppercase tracking-widest font-black ${meta.bg} ${meta.text}`}
+                              className={`inline-flex items-center gap-2 justify-center px-3 py-1 text-xs uppercase tracking-widest font-black ${meta.bg} ${meta.text} rounded-lg`}
                             >
                               <img
                                 src={meta.icon}
                                 alt=""
                                 width={16}
                                 height={16}
-                                className="w-4 h-4 rounded-full border border-current bg-white"
+                                className="w-6 h-6 rounded-full  bg-white"
                               />
                               {meta.name}
                             </span>
@@ -1022,7 +1035,7 @@ export default function AnalyticsDashboard() {
                                   alt=""
                                   width={16}
                                   height={16}
-                                  className="w-4 h-4 rounded-full border border-ink bg-white"
+                                  className="w-6 h-6 rounded-full "
                                 />
                               )}
                             {tokenSymbol}
@@ -1035,7 +1048,7 @@ export default function AnalyticsDashboard() {
                           <div className="flex items-center gap-3">
                             {state === "CONFIRMED" && (
                               <span
-                                className="w-3 h-3 bg-black shrink-0"
+                                className="w-3 h-3 bg-green-600 shrink-0 rounded-full"
                                 aria-hidden="true"
                               />
                             )}
@@ -1047,7 +1060,7 @@ export default function AnalyticsDashboard() {
                             )}
                             {state === "FAILED" && (
                               <span
-                                className="w-3 h-3 bg-red-600 shrink-0"
+                                className="w-3 h-3 bg-red-600 shrink-0 rounded-full"
                                 aria-hidden="true"
                               />
                             )}
